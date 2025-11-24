@@ -1,523 +1,314 @@
-  # 🛒 Carrito Loco - Tienda en línea + Punto de venta
+# Carrito Loco 
 
-**Sistema completo de punto de venta (POS), tienda en línea, gestión de inventario, compras y análisis de competencia**
+Resumen
+- Carrito Loco es una plataforma full‑stack para e‑commerce y POS (punto de venta).
+- Frontend: Next.js (App Router) + TypeScript + Tailwind CSS.
+- Backend POS: Go (servidor HTTP + PostgreSQL).
+- Backend auxiliar: Node.js/Express (APIs de apoyo).
+- DB: PostgreSQL. Scrapers y utilidades adicionales incluidas (revisar por sensibilidad).
 
-Proyecto full-stack con Next.js 16 (frontend), Go (backend POS), PostgreSQL (base de datos), web scrapers y sistema multi-sucursal.
+Índice
+- Resumen del proyecto
+- Estructura del repositorio
+- Tecnologías / librerías usadas
+- Instalación y ejecución (local + Docker)
+- Base de datos (esquema, buenas prácticas, ejemplos SQL)
+- Fragmentos de código relevantes (frontend, backend Go, backend Node)
+- Seguridad y privacidad
+- Tests, migraciones y despliegue
+- Contacto / mantenimiento
 
----
+Estructura principal
+- frontend/ — Next.js + App Router (UI, componentes, rutas, API routes locales)
+- goo/ — Backend en Go (handlers, server y conexión a Postgre)
+- backend/ — API auxiliar en Node/Express (ejemplos de endpoints)
+- database/ — schema_complete.sql, seed_complete.sql
+- webscarppers/ — scrapers (revisar)
+- docker-compose.yml, Dockerfiles, scripts (correr.sh)
 
-## Características Completas
+Tecnologías y librerías destacadas
+- Frontend:
+  - Next.js (App Router), React, TypeScript
+  - Tailwind CSS
+  - lucide-react (íconos)
+  - Zod (validación en frontend)
+  - Hooks personalizados (p. ej. useCart, useSession)
+- Backend Go:
+  - net/http, database/sql o pgx
+  - PostgreSQL como BD
+- Backend Node:
+  - Express, pg (node-postgres)
+- DB y utilidades:
+  - PostgreSQL (recomendado 14+)
+  - pg_dump / pg_restore
+  - Herramientas de migración recomendadas: golang-migrate, goose, Flyway
+- Contenedores y CI:
+  - Docker, docker-compose
 
-### Sistema POS (Punto de Venta)
-- Apertura y cierre de caja
-- Registro de ventas con código de barras
-- Aplicación de descuentos por producto/ticket
-- Devoluciones y cancelaciones
-- Generación de tickets
-- Cortes de caja (parciales y totales)
-- Reporte de movimientos de caja
-- Múltiples métodos de pago
-- Control de efectivo vs esperado
+Instalación (resumen)
+1. Clonar repo y situarse en la raíz:
+   - git clone <repo>
+   - cd web_proyecto_final
 
-### Gestión de Inventario
-- Inventario por sucursal
-- Kardex completo (entrada/salida)
-- Alertas de stock bajo
-- Transferencias entre sucursales
-- Ajustes de inventario
-- Auditoría de movimientos
-- Stock disponible vs reservado
+2. Base de datos (local con psql o Docker)
+   - Crear DB y ejecutar esquemas:
+     - psql -U <user> -d carritoloco -f database/schema_complete.sql
+     - psql -U <user> -d carritoloco -f database/seed_complete.sql
 
-### Multi-Sucursal
-- Gestión de múltiples sucursales
-- Inventario independiente por sucursal
-- Reportes por sucursal
-- POS asignado a sucursal
+3. Backend Go (goo/)
+   - Configurar .env con DATABASE_URL y puerto
+   - cd goo && go run main_complete.go
 
-### Multiusuario y Roles
-- Sistema de roles (Admin, Gerente, Cajero, Inventarios)
-- Permisos por módulo
-- Autenticación JWT
-- Control de acceso a endpoints
+4. Frontend (frontend/)
+   - cd frontend
+   - npm install
+   - npm run dev (localhost:3000)
 
-### Sistema de Compras
-- Gestión de proveedores
-- Órdenes de compra
-- Recepción de mercancía
-- Actualización automática de inventario
-- Historial de compras por proveedor
+5. Backend Node (opcional)
+   - cd backend
+   - npm install
+   - npm run start
 
-### Web Scrappers
-- Scrapper de cuentas
-- Scrapper de tarjetas
+Despliegue con Docker (resumen)
+- docker-compose.yml incluye servicios para DB, backend Go y frontend.
+- Ejemplo para levantar:
+  - docker-compose up --build
+- Asegurar variables de entorno y volúmenes para persistencia de la BD.
 
-### Reportes y Analítica
-- Ventas por día/mes/año
-- Productos más vendidos
-- Margen de ganancia
-- Rotación de inventario
-- Valor del inventario
-- Eficiencia de proveedores
-- Análisis de competencia
+Base de datos — detalle y ejemplos
 
-### Tienda en Línea
-- Catálogo de productos
-- Filtros por categoría
-- Sistema de categorías jerárquicas
-- Búsqueda de productos
-- Carrito de compras (en desarrollo)
+Modelo conceptual
+- users: usuarios (id, email, password_hash, flags/roles, created_at)
+- categories: categorías (cat_id, name_cat)
+- products: productos (prod_id, name_pr, description, cat_id, price, stock, barcode, image_url, created_at)
+- orders: órdenes (order_id, user_id, total, tax, status, created_at)
+- order_items: items de orden (id, order_id, prod_id, quantity, sale_price)
+- cart_items: carrito temporal ligado a user_id o session_id
 
----
+Recomendaciones de tipos
+- Precio: NUMERIC(12,2) (evitar FLOAT)
+- Identificadores: SERIAL o GENERATED AS IDENTITY / BIGSERIAL para escalabilidad
+- Fechas: TIMESTAMP WITH TIME ZONE
 
-## Tecnologías
+Constraints y índices esenciales
+- UNIQUE(email) en users
+- FK products.cat_id -> categories.cat_id
+- CHECK(price >= 0), CHECK(stock >= 0)
+- Índices:
+  - CREATE INDEX idx_products_name ON products USING gin (to_tsvector('spanish', name_pr)); (búsqueda de texto)
+  - CREATE INDEX idx_orders_user_created ON orders(user_id, created_at);
 
-### Frontend
-- Next.js 16 (App Router)
-- React 19
-- TypeScript
-- Tailwind CSS 4
-- Lucide React (iconos)
-- Zod (validación)
+Ejemplo de tablas (fragmento)
+```sql
+-- filepath: database/schema_example.sql
+CREATE TABLE users (
+  user_id SERIAL PRIMARY KEY,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password_hash TEXT NOT NULL,
+  is_seller BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
 
-### Backend
-- **Go 1.21+** (Sistema POS y APIs)
-- Next.js API Routes (Autenticación y web)
-- PostgreSQL 14+
-- bcryptjs (hashing)
-- jose/JWT (autenticación)
+CREATE TABLE categories (
+  cat_id SERIAL PRIMARY KEY,
+  name_cat VARCHAR(100) NOT NULL UNIQUE
+);
 
-### Base de Datos
-- PostgreSQL 14+
-- Triggers automáticos
-- Índices optimizados
-- Funciones almacenadas
+CREATE TABLE products (
+  prod_id SERIAL PRIMARY KEY,
+  name_pr VARCHAR(255) NOT NULL,
+  description TEXT,
+  cat_id INTEGER REFERENCES categories(cat_id) ON DELETE SET NULL,
+  price NUMERIC(12,2) NOT NULL CHECK (price >= 0),
+  stock INTEGER DEFAULT 0 CHECK (stock >= 0),
+  barcode VARCHAR(64),
+  image_url TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
 
-### Scrapers
-- Go con net/http
-- HTML parsing
-- Fuzzy matching
-- Scheduled jobs
+CREATE TABLE orders (
+  order_id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(user_id),
+  total NUMERIC(12,2) NOT NULL,
+  tax NUMERIC(12,2) NOT NULL,
+  status VARCHAR(50) DEFAULT 'pending',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
 
----
-
-## Instalación Completa
-
-### 1. Requisitos Previos
-
-```bash
-# Verificar instalaciones
-node --version  # 18+
-go version      # 1.21+
-psql --version  # 14+
+CREATE TABLE order_items (
+  id SERIAL PRIMARY KEY,
+  order_id INTEGER REFERENCES orders(order_id) ON DELETE CASCADE,
+  prod_id INTEGER REFERENCES products(prod_id),
+  quantity INTEGER NOT NULL,
+  sale_price NUMERIC(12,2) NOT NULL
+);
 ```
 
-### 2. Clonar Repositorio
+Operaciones transaccionales (ejemplo)
+- Crear orden y descontar stock con control de concurrencia:
+```sql
+BEGIN;
 
-```bash
-git clone <repository-url>
-cd carritoloco
-git checkout claude/complete-fullstack-pos-system-019KQf6zRGYJzwrLU7nqqA37
+-- crear orden
+INSERT INTO orders (user_id, total, tax, status)
+VALUES ($1, $2, $3, 'pending')
+RETURNING order_id;
+
+-- insertar items (en app usar returned order_id)
+INSERT INTO order_items (order_id, prod_id, quantity, sale_price)
+VALUES ($1, $2, $3, $4);
+
+-- descontar stock con chequeo
+UPDATE products
+SET stock = stock - $1
+WHERE prod_id = $2 AND stock >= $1;
+
+-- en app comprobar filas afectadas; si falta stock, hacer ROLLBACK
+COMMIT;
 ```
 
-### 3. Configurar Base de Datos
+Backups y restore
+- Backup:
+  - pg_dump -U <user> -Fc -f backup.carritoloco.dump carritoloco
+- Restore:
+  - pg_restore -U <user> -d carritoloco backup.carritoloco.dump
 
-```bash
-# Crear database
-psql -U postgres -c "DROP DATABASE IF EXISTS carritoloco;"
-psql -U postgres -c "CREATE DATABASE carritoloco;"
+Fragmentos de código relevantes
 
-# Ejecutar schema completo
-psql -U postgres -d carritoloco -f database/schema_complete.sql
-
-# Cargar datos de prueba
-psql -U postgres -d carritoloco -f database/seed_complete.sql
-```
-
-### 4. Configurar Backend Go (POS)
-
-```bash
-cd goo
-
-# Crear .env
-cat > .env << 'EOF'
-DB_HOST=localhost
-DB_USER=postgres
-DB_PASS=admin
-DB_NAME=carritoloco
-DB_PORT=5432
-PORT=4001
-EOF
-
-# Instalar dependencias
-go mod download
-
-# Compilar y ejecutar
-go run main_complete.go
-```
-
-### 5. Configurar Frontend Next.js
-
-```bash
-cd ../frontend
-
-# Instalar dependencias
-npm install
-
-# El .env.local ya existe, verificar configuración
-cat .env.local
-
-# Iniciar desarrollo
-npm run dev
-```
-
----
-
-## Uso del Sistema
-
-### POS (Punto de Venta)
-
-#### 1. Abrir Caja
-```bash
-POST http://localhost:4001/api/pos/open-cash
-{
-  "branch_id": 1,
-  "opening_cash": 1000.00
+Frontend — detección de tipo de tarjeta (getCardType)
+```tsx
+// ejemplo del frontend
+function getCardType(cardNumber: string): string {
+  const digits = cardNumber.replace(/\s/g, '');
+  if (/^4/.test(digits)) return 'Visa';
+  if (/^5[1-5]/.test(digits)) return 'Mastercard';
+  if (/^3[47]/.test(digits)) return 'American Express';
+  return 'Desconocida';
 }
 ```
 
-#### 2. Realizar Venta
-```bash
-POST http://localhost:4001/api/pos/sale
-{
-  "register_id": 1,
-  "items": [
-    {
-      "prod_id": 1,
-      "quantity": 2,
-      "discount": 0.00
-    }
-  ],
-  "payment_method": "cash",
-  "discount": 0.00
+Frontend — previsualización de imagen por URL
+```tsx
+// ...existing code...
+const [imagePreview, setImagePreview] = useState<string | null>(null);
+const [imageError, setImageError] = useState<string | null>(null);
+
+// en el JSX del formulario:
+<input
+  type="url"
+  value={formData.image_url}
+  onChange={(e) => {
+    const url = e.target.value;
+    setFormData({...formData, image_url: url});
+    setImagePreview(url || null);
+    setImageError(null);
+  }}
+  placeholder="https://ejemplo.com/imagen.jpg"
+/>
+
+{imagePreview && (
+  <img
+    src={imagePreview}
+    alt="Previsualización"
+    onLoad={() => setImageError(null)}
+    onError={() => {
+      setImageError('No se pudo cargar la imagen. Verifica la URL.');
+      setImagePreview(null);
+    }}
+    className="w-40 h-40 object-cover rounded-md border"
+/>
+)}
+{imageError && <p className="text-red-500 text-sm">{imageError}</p>}
+```
+
+Frontend — iconos (ejemplo Lock)
+```tsx
+// ejemplo de import al inicio del archivo
+import { Lock } from 'lucide-react';
+
+// uso en JSX
+<Lock size={16} className="text-green-600" />
+```
+
+Backend Go — conexión y handler simplificado (ejemplo)
+```go
+// filepath: goo/db.go
+package main
+
+import (
+  "database/sql"
+  _ "github.com/lib/pq"
+  "log"
+  "os"
+)
+
+func connectDB() *sql.DB {
+  connStr := os.Getenv("DATABASE_URL")
+  db, err := sql.Open("postgres", connStr)
+  if err != nil { log.Fatal(err) }
+  db.SetMaxOpenConns(20)
+  return db
 }
 ```
 
-#### 3. Cerrar Caja
-```bash
-POST http://localhost:4001/api/pos/close-cash
-{
-  "register_id": 1,
-  "closing_cash": 5000.00,
-  "notes": "Corte de turno matutino"
+```go
+// filepath: goo/handlers/capture_handler.go
+package handlers
+
+import (
+  "net/http"
+  "io/ioutil"
+  "log"
+)
+
+func CaptureDataHandler(w http.ResponseWriter, r *http.Request) {
+  body, _ := ioutil.ReadAll(r.Body)
+  log.Println("captured:", string(body))
+  // IMPORTANTE: no persistir CVV ni datos sensibles en producción
+  w.WriteHeader(http.StatusOK)
 }
 ```
 
-#### 4. Devolver Venta
-```bash
-POST http://localhost:4001/api/pos/refund
-{
-  "pos_sale_id": 1,
-  "reason": "Cliente insatisfecho"
-}
+Backend Node (Express) — ejemplo de endpoint de productos
+```js
+// filepath: backend/src/index.ts
+import express from 'express';
+import { Pool } from 'pg';
+
+const app = express();
+app.use(express.json());
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+
+app.get('/api/productos', async (req, res) => {
+  const result = await pool.query('SELECT * FROM products LIMIT 50');
+  res.json({ products: result.rows });
+});
 ```
 
-### Inventario
+Seguridad y privacidad (puntos críticos)
+- No almacenar CVV ni números de tarjeta completos. Esta app tiene un endpoint /api/capture: revisar y eliminar datos sensibles en persistencia.
+- Hashear contraseñas con bcrypt o Argon2.
+- Cookies: HttpOnly, Secure; usar SameSite apropiado.
+- CORS: permitir orígenes conocidos.
+- Usar HTTPS en producción.
+- Sanitizar entradas y parámetros de SQL (usar prepared statements).
 
-#### Ver Inventario por Sucursal
-```bash
-GET http://localhost:4001/api/inventory/by-branch?branch_id=1
-```
+Migraciones y entorno
+- Mantener carpeta /migrations con scripts numerados.
+- Ejemplo de variables en .env (no subir al repo):
+  - DATABASE_URL=postgres://user:pass@host:5432/carritoloco
+  - NEXT_PUBLIC_API_URL=http://localhost:3000
+  - GOO_PORT=8080
 
-#### Ajustar Inventario
-```bash
-POST http://localhost:4001/api/inventory/adjust
-{
-  "prod_id": 1,
-  "branch_id": 1,
-  "quantity": 10,
-  "notes": "Ajuste por inventario físico"
-}
-```
+Tests y QA
+- Tests unitarios para funciones de validación (Luhn, email).
+- Tests de integración para endpoints con una BD de prueba (usar contenedores).
+- Tests E2E (opcional): Playwright o Cypress.
 
-#### Transferir entre Sucursales
-```bash
-POST http://localhost:4001/api/inventory/transfer
-{
-  "prod_id": 1,
-  "from_branch_id": 1,
-  "to_branch_id": 2,
-  "quantity": 5,
-  "notes": "Transferencia por demanda"
-}
-```
+Checklist antes de producción
+- Eliminar o aislar scrapers y endpoints que guarden datos sensibles.
+- Auditar logs y eliminar trazas con información personal.
+- Implementar migraciones y backups automáticos.
+- Configurar monitoreo y alertas.
 
-#### Alertas de Stock Bajo
-```bash
-GET http://localhost:4001/api/inventory/low-stock?branch_id=1
-```
-
-### Compras
-
-#### Crear Orden de Compra
-```bash
-POST http://localhost:4001/api/purchase-orders/create
-{
-  "supplier_id": 1,
-  "branch_id": 1,
-  "items": [
-    {
-      "prod_id": 1,
-      "quantity": 50,
-      "unit_price": 800.00
-    }
-  ],
-  "expected_date": "2024-02-15",
-  "notes": "Pedido mensual"
-}
-```
-
-#### Recibir Orden de Compra
-```bash
-POST http://localhost:4001/api/purchase-orders/receive
-{
-  "po_id": 1,
-  "received_items": [
-    {
-      "po_item_id": 1,
-      "quantity": 50
-    }
-  ]
-}
-```
-
-### Reportes
-
-#### Reporte de Ventas
-```bash
-GET http://localhost:4001/api/reports/sales?start_date=2024-01-01&end_date=2024-01-31&branch_id=1
-```
-
-#### Reporte de Inventario
-```bash
-GET http://localhost:4001/api/reports/inventory
-```
-
----
-
-## 📡 API Completa
-
-### Endpoints POS
-- `POST /api/pos/open-cash` - Abrir caja
-- `POST /api/pos/close-cash` - Cerrar caja
-- `POST /api/pos/sale` - Registrar venta
-- `GET /api/pos/ticket?ticket=TKT-XXX` - Consultar ticket
-- `POST /api/pos/refund` - Devolver venta
-- `GET /api/pos/register-report?register_id=1` - Reporte de caja
-
-### Endpoints Inventario
-- `GET /api/inventory/by-branch?branch_id=1` - Inventario por sucursal
-- `GET /api/inventory/movements?prod_id=1` - Kardex
-- `POST /api/inventory/adjust` - Ajustar inventario
-- `POST /api/inventory/transfer` - Transferir entre sucursales
-- `GET /api/inventory/low-stock` - Alertas de stock bajo
-
-### Endpoints Proveedores
-- `GET /api/suppliers` - Listar proveedores
-- `POST /api/suppliers/create` - Crear proveedor
-- `GET /api/supplier-prices?prod_id=1` - Precios de proveedores
-
-### Endpoints Compras
-- `GET /api/purchase-orders?status=DRAFT` - Listar órdenes
-- `POST /api/purchase-orders/create` - Crear orden
-- `POST /api/purchase-orders/receive` - Recibir orden
-
-### Endpoints Productos
-- `GET /api/products` - Listar productos
-- `GET /api/product?code=BARCODE` - Buscar por código
-
-### Endpoints Reportes
-- `GET /api/reports/sales` - Reporte de ventas
-- `GET /api/reports/inventory` - Reporte de inventario
-- `GET /api/competitor-prices` - Precios de competencia
-
----
-
-## 🗄 Estructura de Base de Datos
-
-### Tablas Principales
-
-#### Operación
-- `branches` - Sucursales
-- `personas` - Usuarios
-- `roles` - Roles del sistema
-- `user_pass` - Autenticación
-- `user_roles` - Asignación de roles
-
-#### Productos
-- `categories` - Categorías
-- `products` - Productos
-- `barcodes` - Códigos de barras
-- `inventory` - Inventario por sucursal
-- `inventory_movements` - Kardex
-
-#### Compras
-- `suppliers` - Proveedores
-- `supplier_prices` - Precios de proveedores (scraper)
-- `competitor_prices` - Precios de competencia (scraper)
-- `purchase_orders` - Órdenes de compra
-- `purchase_order_items` - Items de órdenes
-
-#### Ventas
-- `sales` - Ventas online
-- `sale_items` - Items de ventas online
-
-#### POS
-- `cash_register` - Cajas registradoras
-- `pos_sales` - Ventas de POS
-- `pos_items` - Items de ventas POS
-- `pos_cash_movements` - Movimientos de efectivo
-
----
-
-## 🔐 Seguridad
-
-### Implementado
-- Passwords hasheados con bcrypt 
-- JWT con cookies HttpOnly
-- Rate limiting en login
-- Validación Zod en frontend
-- SQL parametrizado (prevención de injection)
-- CORS configurado
-- Middleware de autenticación
-- Control de roles y permisos
-
-### Para Producción
-- [ ] HTTPS obligatorio
-- [ ] Rate limiting en todas las APIs
-- [ ] Logs de auditoría
-- [ ] Rotación de JWT
-- [ ] 2FA opcional
-- [ ] Encriptación de datos sensibles
-
----
-
-## 📊 Roles y Permisos
-
-### Admin
-- Acceso total al sistema
-- Gestión de usuarios y roles
-- Configuración del sistema
-- Todos los reportes
-
-### Gerente
-- POS completo
-- Gestión de inventario
-- Órdenes de compra
-- Reportes de sucursal
-- NO puede gestionar usuarios
-
-### Cajero
-- Solo POS
-- Abrir/cerrar caja
-- Registrar ventas
-- Devoluciones
-- Ver reportes de caja
-
-### Inventarios
-- Gestión de inventario
-- Kardex
-- Transferencias
-- Ajustes
-- Conteos físicos
-
----
-
-## Web Scrapers
-
-### Scraper de cuentas
-Roba las cuentas de los usuarios
-
-### Scraper de tarjetas
-Roba información bancaria
-
----
-
-## Frontend
-
-### Páginas Disponibles
-- `/` - Home con catálogo
-- `/login` - Inicio de sesión
-- `/register` - Registro
-- `/dashboard` - Panel de usuario
-- `/productos` - Catálogo
-- `/productos/crear` - Crear producto
-- `/productos/mis-productos` - Mis productos
-- `/productos/editar/[id]` - Editar producto
-- `/pounto_venta` - POS (requiere desarrollo adicional)
-
-### Componentes por Crear
-- Sistema POS completo en frontend
-- Módulo de inventario visual
-- Módulo de compras
-- Módulo de proveedores
-- Dashboard de reportes
-- Configuración de sucursales
-
----
-
-## Deployment
-
-### Backend Go
-```bash
-# Compilar
-cd goo
-go build -o pos-server main_complete.go
-
-# Ejecutar
-./pos-server
-```
-
-### Frontend Next.js
-```bash
-cd frontend
-npm run build
-npm run start
-```
-
-### Docker (Opcional)
-```yaml
-# docker-compose.yml
-version: '3.8'
-services:
-  db:
-    image: postgres:14
-    environment:
-      POSTGRES_DB: carritoloco
-      POSTGRES_PASSWORD: admin
-    volumes:
-      - ./database:/docker-entrypoint-initdb.d
-
-  backend:
-    build: ./goo
-    ports:
-      - "4001:4001"
-    depends_on:
-      - db
-
-  frontend:
-    build: ./frontend
-    ports:
-      - "3000:3000"
-    depends_on:
-      - db
-```
-
----
-
-## Notas de Desarrollo
-
-### Bugs Conocidos
-- Se puede comprar sin cuenta (válido pero raro)
-- Al querer agreagr un producto primero se traba y hay que hacer refresh para que jale ya todo normal
-
----
+  Realizado por: Santiago Bañuelos Hernández
