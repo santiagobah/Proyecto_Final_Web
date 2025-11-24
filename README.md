@@ -1,4 +1,4 @@
-# 🛒 Carrito Loco - Complete Full-Stack POS System
+  # 🛒 Carrito Loco - Tienda en línea + Punto de venta
 
 **Sistema completo de punto de venta (POS), tienda en línea, gestión de inventario, compras y análisis de competencia**
 
