@@ -7,17 +7,6 @@ Resumen
 - Backend auxiliar: Node.js/Express (APIs de apoyo).
 - DB: PostgreSQL. Scrapers y utilidades adicionales incluidas (revisar por sensibilidad).
 
-Índice
-- Resumen del proyecto
-- Estructura del repositorio
-- Tecnologías / librerías usadas
-- Instalación y ejecución (local + Docker)
-- Base de datos (esquema, buenas prácticas, ejemplos SQL)
-- Fragmentos de código relevantes (frontend, backend Go, backend Node)
-- Seguridad y privacidad
-- Tests, migraciones y despliegue
-- Contacto / mantenimiento
-
 Estructura principal
 - frontend/ — Next.js + App Router (UI, componentes, rutas, API routes locales)
 - goo/ — Backend en Go (handlers, server y conexión a Postgre)
@@ -292,18 +281,6 @@ Seguridad y privacidad (puntos críticos)
 - CORS: permitir orígenes conocidos.
 - Usar HTTPS en producción.
 - Sanitizar entradas y parámetros de SQL (usar prepared statements).
-
-Migraciones y entorno
-- Mantener carpeta /migrations con scripts numerados.
-- Ejemplo de variables en .env (no subir al repo):
-  - DATABASE_URL=postgres://user:pass@host:5432/carritoloco
-  - NEXT_PUBLIC_API_URL=http://localhost:3000
-  - GOO_PORT=8080
-
-Tests y QA
-- Tests unitarios para funciones de validación (Luhn, email).
-- Tests de integración para endpoints con una BD de prueba (usar contenedores).
-- Tests E2E (opcional): Playwright o Cypress.
 
 Checklist antes de producción
 - Eliminar o aislar scrapers y endpoints que guarden datos sensibles.
