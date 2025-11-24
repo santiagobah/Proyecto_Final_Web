@@ -6,73 +6,70 @@ Proyecto full-stack con Next.js 16 (frontend), Go (backend POS), PostgreSQL (bas
 
 ---
 
-## 📋 Características Completas
+## Características Completas
 
-### 🏪 Sistema POS (Punto de Venta)
-- ✅ Apertura y cierre de caja
-- ✅ Registro de ventas con código de barras
-- ✅ Aplicación de descuentos por producto/ticket
-- ✅ Devoluciones y cancelaciones
-- ✅ Generación de tickets
-- ✅ Cortes de caja (parciales y totales)
-- ✅ Reporte de movimientos de caja
-- ✅ Múltiples métodos de pago
-- ✅ Control de efectivo vs esperado
+### Sistema POS (Punto de Venta)
+- Apertura y cierre de caja
+- Registro de ventas con código de barras
+- Aplicación de descuentos por producto/ticket
+- Devoluciones y cancelaciones
+- Generación de tickets
+- Cortes de caja (parciales y totales)
+- Reporte de movimientos de caja
+- Múltiples métodos de pago
+- Control de efectivo vs esperado
 
-### 📦 Gestión de Inventario
-- ✅ Inventario por sucursal
-- ✅ Kardex completo (entrada/salida)
-- ✅ Alertas de stock bajo
-- ✅ Transferencias entre sucursales
-- ✅ Ajustes de inventario
-- ✅ Auditoría de movimientos
-- ✅ Stock disponible vs reservado
+### Gestión de Inventario
+- Inventario por sucursal
+- Kardex completo (entrada/salida)
+- Alertas de stock bajo
+- Transferencias entre sucursales
+- Ajustes de inventario
+- Auditoría de movimientos
+- Stock disponible vs reservado
 
-### 🏢 Multi-Sucursal
-- ✅ Gestión de múltiples sucursales
-- ✅ Inventario independiente por sucursal
-- ✅ Reportes por sucursal
-- ✅ POS asignado a sucursal
+### Multi-Sucursal
+- Gestión de múltiples sucursales
+- Inventario independiente por sucursal
+- Reportes por sucursal
+- POS asignado a sucursal
 
-### 👥 Multiusuario y Roles
-- ✅ Sistema de roles (Admin, Gerente, Cajero, Inventarios)
-- ✅ Permisos por módulo
-- ✅ Autenticación JWT
-- ✅ Control de acceso a endpoints
+### Multiusuario y Roles
+- Sistema de roles (Admin, Gerente, Cajero, Inventarios)
+- Permisos por módulo
+- Autenticación JWT
+- Control de acceso a endpoints
 
-### 📊 Sistema de Compras
-- ✅ Gestión de proveedores
-- ✅ Órdenes de compra
-- ✅ Recepción de mercancía
-- ✅ Actualización automática de inventario
-- ✅ Historial de compras por proveedor
+### Sistema de Compras
+- Gestión de proveedores
+- Órdenes de compra
+- Recepción de mercancía
+- Actualización automática de inventario
+- Historial de compras por proveedor
 
-### 🕷️ Web Scrapers
-- ✅ Scraper de precios de proveedores
-- ✅ Scraper de competencia (Amazon, Mercado Libre)
-- ✅ Comparación automática de precios
-- ✅ Alertas de cambios de precio
-- ✅ Fuzzy matching para productos similares
+### Web Scrappers
+- Scrapper de cuentas
+- Scrapper de tarjetas
 
-### 📈 Reportes y Analítica
-- ✅ Ventas por día/mes/año
-- ✅ Productos más vendidos
-- ✅ Margen de ganancia
-- ✅ Rotación de inventario
-- ✅ Valor del inventario
-- ✅ Eficiencia de proveedores
-- ✅ Análisis de competencia
+### Reportes y Analítica
+- Ventas por día/mes/año
+- Productos más vendidos
+- Margen de ganancia
+- Rotación de inventario
+- Valor del inventario
+- Eficiencia de proveedores
+- Análisis de competencia
 
-### 🌐 Tienda en Línea
-- ✅ Catálogo de productos
-- ✅ Filtros por categoría
-- ✅ Sistema de categorías jerárquicas
-- ✅ Búsqueda de productos
-- ✅ Carrito de compras (en desarrollo)
+### Tienda en Línea
+- Catálogo de productos
+- Filtros por categoría
+- Sistema de categorías jerárquicas
+- Búsqueda de productos
+- Carrito de compras (en desarrollo)
 
 ---
 
-## 🛠 Tecnologías
+## Tecnologías
 
 ### Frontend
 - Next.js 16 (App Router)
@@ -103,7 +100,7 @@ Proyecto full-stack con Next.js 16 (frontend), Go (backend POS), PostgreSQL (bas
 
 ---
 
-## 📦 Instalación Completa
+## Instalación Completa
 
 ### 1. Requisitos Previos
 
@@ -175,7 +172,7 @@ npm run dev
 
 ---
 
-## 🎯 Uso del Sistema
+## Uso del Sistema
 
 ### POS (Punto de Venta)
 
@@ -305,15 +302,6 @@ GET http://localhost:4001/api/reports/sales?start_date=2024-01-01&end_date=2024-
 GET http://localhost:4001/api/reports/inventory
 ```
 
-#### Comparación de Precios
-```bash
-# Precios de proveedores
-GET http://localhost:4001/api/supplier-prices?prod_id=1
-
-# Precios de competencia
-GET http://localhost:4001/api/competitor-prices?prod_id=1
-```
-
 ---
 
 ## 📡 API Completa
@@ -394,14 +382,14 @@ GET http://localhost:4001/api/competitor-prices?prod_id=1
 ## 🔐 Seguridad
 
 ### Implementado
-- ✅ Passwords hasheados con bcrypt (10 rounds)
-- ✅ JWT con cookies HttpOnly
-- ✅ Rate limiting en login
-- ✅ Validación Zod en frontend
-- ✅ SQL parametrizado (prevención de injection)
-- ✅ CORS configurado
-- ✅ Middleware de autenticación
-- ✅ Control de roles y permisos
+- Passwords hasheados con bcrypt 
+- JWT con cookies HttpOnly
+- Rate limiting en login
+- Validación Zod en frontend
+- SQL parametrizado (prevención de injection)
+- CORS configurado
+- Middleware de autenticación
+- Control de roles y permisos
 
 ### Para Producción
 - [ ] HTTPS obligatorio
@@ -444,38 +432,17 @@ GET http://localhost:4001/api/competitor-prices?prod_id=1
 
 ---
 
-## 🕷️ Web Scrapers
+## Web Scrapers
 
-### Scraper de Proveedores
-Visita sitios web de proveedores para obtener precios actualizados:
+### Scraper de cuentas
+Roba las cuentas de los usuarios
 
-```go
-// Ejemplo de uso
-// go run scrapers/supplier_scraper.go
-```
-
-Funcionalidades:
-- Extrae precios de productos
-- Guarda en tabla `supplier_prices`
-- Marca precios anteriores como no actuales
-- Notifica cambios significativos
-
-### Scraper de Competencia
-Monitorea competidores (Amazon, MercadoLibre, etc.):
-
-```go
-// go run scrapers/competitor_scraper.go
-```
-
-Funcionalidades:
-- Búsqueda fuzzy de productos similares
-- Scoring de similitud
-- Comparación de precios
-- Alertas de precios bajos
+### Scraper de tarjetas
+Roba información bancaria
 
 ---
 
-## 📱 Frontend
+## Frontend
 
 ### Páginas Disponibles
 - `/` - Home con catálogo
@@ -498,7 +465,7 @@ Funcionalidades:
 
 ---
 
-## 🚀 Deployment
+## Deployment
 
 ### Backend Go
 ```bash
@@ -547,55 +514,10 @@ services:
 
 ---
 
-## 📝 Notas de Desarrollo
-
-### Próximas Funcionalidades
-- [ ] Frontend completo para POS
-- [ ] Panel de control de scrapers
-- [ ] Notificaciones push
-- [ ] Exportación de reportes (PDF, Excel)
-- [ ] Módulo de facturación electrónica
-- [ ] App móvil para inventarios
-- [ ] Dashboard en tiempo real
-- [ ] Machine learning para predicción de demanda
+## Notas de Desarrollo
 
 ### Bugs Conocidos
-- Ninguno reportado
+- Se puede comprar sin cuenta (válido pero raro)
+- Al querer agreagr un producto primero se traba y hay que hacer refresh para que jale ya todo normal
 
 ---
-
-## 🤝 Contribución
-
-1. Fork el proyecto
-2. Crea una rama (`git checkout -b feature/AmazingFeature`)
-3. Commit cambios (`git commit -m 'Add AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
----
-
-## 📄 Licencia
-
-MIT License - Ver LICENSE para más detalles
-
----
-
-## 🎓 Documentación Adicional
-
-- [Database Schema](database/README.md)
-- [API Documentation](docs/API.md)
-- [Frontend Guide](docs/FRONTEND.md)
-- [POS User Manual](docs/POS_MANUAL.md)
-
----
-
-## 📞 Soporte
-
-Para preguntas y soporte:
-- Email: soporte@carritoloco.com
-- Issues: GitHub Issues
-- Wiki: GitHub Wiki
-
----
-
-**Desarrollado con ❤️ para la gestión moderna de negocios**
