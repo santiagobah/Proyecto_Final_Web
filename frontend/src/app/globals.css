@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+/* --- Configuración Base --- */
+:root {
+  /* Colores del Sistema (Variables CSS para uso global) */
+  --primary: #ea580c; /* Naranja Quemado Elegante */
+  --primary-light: #fff7ed; /* Fondo naranja muy suave */
+  --secondary: #1f2937; /* Gris Oscuro Profesional */
+  --background: #f9fafb; /* Gris Perla (Casi blanco) */
+  --surface: #ffffff; /* Blanco Puro */
+  --text-main: #111827; /* Casi negro para lectura */
+  --text-muted: #6b7280; /* Gris medio para detalles */
+}
+
+/* Reset Básico y Tipografía */
+body {
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  background-color: var(--background);
+  color: var(--text-main);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased; /* Texto más nítido en Mac */
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- Scrollbar Personalizado (Elegante) --- */
+/* Funciona en Chrome, Edge y Safari */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #d1d5db; /* Gris suave */
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #9ca3af; /* Un poco más oscuro al pasar el mouse */
+}
+
+/* --- Animaciones Suaves --- */
+
+/* Slide Up (Para los mensajes Toast y Modales) */
+@keyframes slide-up {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Scale Up (Para abrir modales con efecto 'pop') */
+@keyframes scale-up {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-scale-up {
+  animation: scale-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Fade In (Para cargar páginas suavemente) */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out forwards;
+}
+
+/* --- Utilidades Extra --- */
+
+/* Quitar flechas de los inputs numéricos (Para el POS) */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+/* Selección de texto elegante (Color naranja marca) */
+::selection {
+  background-color: #fed7aa; /* Naranja suave */
+  color: #7c2d12; /* Naranja oscuro */
+}

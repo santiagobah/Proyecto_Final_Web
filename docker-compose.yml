@@ -1,0 +1,80 @@
+# CarritoLoco 
+
+#base postgres
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: carritoloco-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: carritoloco
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema_complete.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./database/seed_complete.sql:/docker-entrypoint-initdb.d/02-seed.sql
+    networks:
+      - carritoloco-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # backend go api
+  backend:
+    build:
+      context: ./goo
+      dockerfile: Dockerfile
+    container_name: carritoloco-backend
+    restart: always
+    environment:
+      DB_HOST: postgres
+      DB_USER: postgres
+      DB_PASS: postgres123
+      DB_NAME: carritoloco
+      DB_PORT: 5432
+    ports:
+      - "8080:4001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - carritoloco-network
+
+#front
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: carritoloco-frontend
+    restart: always
+    environment:
+      # para que el navegador que usemos se pueda conectar  con el backend:
+      NEXT_PUBLIC_API_URL: http://localhost:8080
+      
+      # para que se encuenrte la base de datos:
+      DB_HOST: postgres
+      DB_USER: postgres
+      DB_PASS: postgres123
+      DB_NAME: carritoloco
+      DB_PORT: 5432
+      # url completa de la base de datos
+      DATABASE_URL: postgres://postgres:postgres123@postgres:5432/carritoloco
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+      - postgres
+    networks:
+      - carritoloco-network
+
+networks:
+  carritoloco-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

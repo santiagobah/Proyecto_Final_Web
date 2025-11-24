@@ -1,0 +1,133 @@
+body {
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.payment-container {
+    background-color: #ffffff;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    box-sizing: border-box;
+}
+
+.header {
+    background-color: #f7f7f7;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    text-align: left;
+}
+
+form input[type="text"],
+form input[type="email"],
+form input[type="tel"] {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 16px;
+    color: #333;
+    transition: border-color 0.3s;
+}
+
+form input::placeholder {
+    color: #bbb;
+}
+
+form input:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+.card-details {
+    display: flex;
+    gap: 12px;
+}
+
+.card-details input {
+    flex: 1;
+}
+
+.save-card {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.save-card input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 8px;
+    position: relative;
+}
+
+.save-card input[type="checkbox"]:checked {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.save-card input[type="checkbox"]:checked::after {
+    content: '✔';
+    color: #fff;
+    font-size: 14px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.save-card label {
+    font-size: 16px;
+    color: #555;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.help-icon {
+    margin-left: 8px;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    font-size: 12px;
+    color: #888;
+    cursor: help;
+}
+
+.pay-button {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(to right, #007bff, #0056b3);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+
+.lock-icon {
+    font-size: 16px;
+}
